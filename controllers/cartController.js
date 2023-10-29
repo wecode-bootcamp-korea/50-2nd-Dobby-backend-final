@@ -9,7 +9,7 @@ const addCartController = async (req, res) => {
     const decoded = etc.decoded(acccesToken, secretKey);
     const userId = decoded.userId;
 
-    const productId = req.params.productId;
+    const productId = req.body.productId;
     const quantity = parseInt(req.body.quantity);
 
     if (!productId || !quantity) {
@@ -60,6 +60,25 @@ const checkBoxController = async (req, res) => {
   }
 };
 
+const allCheckBoxController = async (req, res) => {
+  try {
+    const acccesToken = req.headers.authorization;
+    const decoded = etc.decoded(acccesToken, secretKey);
+    const userId = decoded.userId;
+
+    const {statusId} = req.query;
+
+    if (!statusId) {
+      return res.status(404).json({ message: "KEY ERROR" });
+    }
+    const result = await cartService.allCheckBoxService(userId, statusId);
+    return res.status(200).json({ message: "check success", data: result });
+  } catch (error) {
+    console.error(error);
+    throwError(400, "check error");
+  }
+};
+
 const increaseCartController = async (req, res) => {
   try {
     const acccesToken = req.headers.authorization;
@@ -72,7 +91,7 @@ const increaseCartController = async (req, res) => {
       return res.status(404).json({ message: "KEY ERROR" });
     }
 
-    const result = await cartService.updateCartService(productId, "+" , userId);
+    const result = await cartService.updateCartService(productId, "+", userId);
     return res.status(200).json({ message: "increase success", data: result });
   } catch (error) {
     return res.status(error.statusCode || 500).json({ message: error.message });
@@ -91,7 +110,7 @@ const decreaseCartController = async (req, res) => {
       return res.status(404).json({ message: "KEY ERROR" });
     }
 
-    const result = await cartService.updateCartService(productId, "-" , userId);
+    const result = await cartService.updateCartService(productId, "-", userId);
     return res.status(200).json({ message: "decrease success", data: result });
   } catch (error) {
     return res.status(error.statusCode || 500).json({ message: error.message });
@@ -103,14 +122,14 @@ const deleteCartController = async (req, res) => {
     const acccesToken = req.headers.authorization;
     const decoded = etc.decoded(acccesToken, secretKey);
     const userId = decoded.userId;
-    
+
     const productId = req.params.productId;
 
     if (!productId) {
       return res.status(404).json({ message: "KEY ERROR" });
     }
 
-    const result = await cartService.deleteCartService(productId , userId);
+    const result = await cartService.deleteCartService(productId, userId);
     return result.status(200).json({ message: "delete success", data: result });
   } catch (error) {
     return res.status(error.statusCode || 500).json({ message: error });
@@ -121,6 +140,7 @@ module.exports = {
   addCartController,
   selectCartController,
   checkBoxController,
+  allCheckBoxController,
   increaseCartController,
   decreaseCartController,
   deleteCartController,

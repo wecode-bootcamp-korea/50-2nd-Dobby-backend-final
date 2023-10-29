@@ -1,16 +1,21 @@
 const cartDao = require("../model/cartDao");
+const utils = require("../utils/index");
 
 const addCartService = async (productId, quantity, userId) => {
   const statusId = 1;
 
-  const insertShoppingCart = await cartDao.createCart(
-    productId,
-    quantity,
-    userId,
-    statusId
-  );
-
-  return insertShoppingCart;
+  const isProductInCart = await cartDao.existsInCart(userId, productId);
+  console.log(isProductInCart);
+  try {
+    if (isProductInCart) {
+      await cartDao.plusQuantity(userId, productId, quantity);
+    } else {
+      await cartDao.createCart(productId, quantity, userId, statusId);
+    }
+  } catch (error) {
+    console.error(error);
+    utils.throwError(500, "Data insert Error");
+  }
 };
 
 const selectCartService = async (userId) => {
@@ -23,6 +28,12 @@ const checkBoxService = async (userId, cartId, statusId) => {
   const checkBox = cartDao.checkBox(userId, cartId, statusId);
 
   return checkBox;
+};
+
+const allCheckBoxService = async (userId, statusId) => {
+  const allCheckBox = cartDao.updateCartStatus(userId, statusId);
+
+  return allCheckBox;
 };
 
 const updateCartService = async (productId, quantityDifference, userId) => {
@@ -49,6 +60,7 @@ module.exports = {
   addCartService,
   selectCartService,
   checkBoxService,
+  allCheckBoxService,
   updateCartService,
   deleteCartService,
 };
