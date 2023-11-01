@@ -5,7 +5,7 @@ const dotenv = require('dotenv');
 const morgan = require("morgan")
 dotenv.config();
 
-const routes= require('./routes');
+const routes = require('./routes');
 
 const app = express();
 app.use(morgan("combined"))
@@ -16,7 +16,6 @@ app.use(routes);
 const server = http.createServer(app);
 const port = process.env.PORT;
 
-//서버 구동 함수
 const start = async () => {
     try {
         server.listen(port, ()=> {

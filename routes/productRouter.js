@@ -1,8 +1,8 @@
 const express = require('express');
-const productController = require('../controllers/productController')
-
 const productRouter = express.Router()
 
-productRouter.get('/:product_id',productController.viewProductController)
+const productController = require('../controllers/productController')
+
+productRouter.get('/:product_id',productController.viewProductController)//실행
 
 module.exports = { productRouter }
