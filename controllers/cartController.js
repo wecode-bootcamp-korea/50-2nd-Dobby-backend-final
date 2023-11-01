@@ -12,13 +12,11 @@ const addCartItem = async (req, res) => {
     const quantity = parseInt(req.body.quantity);
 
     if (!productId || !quantity) {
-      return res.status(400).json({ message: "KEY ERROR" });
+      const error = new Error("KEY_ERROR");
+      error.statusCode = 400;
+      throw error;
     }
-    const result = await cartService.addCartItem(
-      productId,
-      quantity,
-      userId
-    );
+    const result = await cartService.addCartItem(productId, quantity, userId);
     return res.status(200).json({ message: "add success", data: result });
   } catch (error) {
     return res.status(error.statusCode || 500).json({ message: error.message });
@@ -48,11 +46,19 @@ const updateCartItemQuantity = async (req, res, operation) => {
     const quantityDifference = req.body.quantityDifference;
 
     if (!productId || !quantityDifference) {
-      return res.status(400).json({ message: "Invalid product ID or quantity difference" });
+      const error = new Error("KEY ERROR");
+      error.statusCode = 400;
+      throw error;
     }
 
-    const result = await cartService.updateCartItemQuantity(productId, quantityDifference, userId);
-    return res.status(200).json({ message: `${operation} successful`, data: result });
+    const result = await cartService.updateCartItemQuantity(
+      productId,
+      quantityDifference,
+      userId
+    );
+    return res
+      .status(200)
+      .json({ message: `${operation} successful`, data: result });
   } catch (error) {
     return res.status(error.statusCode || 500).json({ message: error.message });
   }
@@ -75,7 +81,9 @@ const deleteCartItem = async (req, res) => {
     const cartId = req.params.cartId;
 
     if (!cartId) {
-      return res.status(400).json({ message: "KEY ERROR" });
+      const error = new Error("KEY_ERROR");
+      error.statusCode = 400;
+      throw error;
     }
 
     const result = await cartService.deleteCartItem(cartId, userId);
@@ -86,9 +94,9 @@ const deleteCartItem = async (req, res) => {
 };
 
 module.exports = {
-addCartItem,
-getCartItems,
-increaseCartItemQuantity,
-decreaseCartItemQuantity,
-deleteCartItem
+  addCartItem,
+  getCartItems,
+  increaseCartItemQuantity,
+  decreaseCartItemQuantity,
+  deleteCartItem,
 };
