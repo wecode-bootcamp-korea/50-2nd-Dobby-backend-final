@@ -1,16 +1,8 @@
-const { findProduct } = require('../models/productDao')
+const productDao = require('../models/productDao')
 
-const viewProduct = async(id) =>{
-    try {
-        const product = await findProduct(id);
+const getProduct = async (productId) => {
+        const product = await productDao.findProduct(productId);
         return product;
-             
-    } catch(err) {
-        console.error(err);
-        return res.status(err.statusCode || 500).json({message:err.message});
-    } 
 } 
 
-
-
-module.exports = { viewProduct }
+module.exports = { getProduct }
