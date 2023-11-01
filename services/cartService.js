@@ -1,5 +1,5 @@
 const cartDao = require("../models/cartDao");
-const utils = require("../utils/index");
+const utils = require("../utils/error");
 
 const addCartItem = async (productId, quantity, userId) => {
   const isProductInCart = await cartDao.existsInCart(userId, productId);
