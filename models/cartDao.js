@@ -2,7 +2,10 @@ const appDataSource = require("./dataSource");
 
 const createCart = async (productId, quantity, userId) => {
   const result = await appDataSource.query(
-    `insert into cart (products_id , quantity , users_id) values(?,?,?);`,
+    `INSERT INTO
+    cart (products_id , quantity , users_id)
+    VAlUES
+    (?,?,?);`,
     [productId, quantity, userId]
   );
 
@@ -12,7 +15,11 @@ const createCart = async (productId, quantity, userId) => {
 const existsInCart = async (userId, productId) => {
   const result = await appDataSource.query(
     `
-  select COUNT(*) as count from cart where users_id = ? and products_id = ?
+  SELECT
+  COUNT(*) as count 
+  FROM cart 
+  WHERE users_id = ?
+  AND products_id = ?
   `,
     [userId, productId]
   );
@@ -22,7 +29,10 @@ const existsInCart = async (userId, productId) => {
 const plusQuantity = async (userId, productId, quantity) => {
   const result = await appDataSource.query(
     `
-update cart set quantity = quantity + ? where users_id = ? and products_id = ?
+  UPDATE cart 
+  SET quantity = quantity + ? 
+  WHERE users_id = ? 
+  AND products_id = ?
 `,
     [quantity, userId, productId]
   );
@@ -31,17 +41,17 @@ update cart set quantity = quantity + ? where users_id = ? and products_id = ?
 
 const selectCart = async (userId) => {
   const result = await appDataSource.query(
-    `select c.* , p.name , p.image ,p.price,
-    case
-    when tc.name = 'creative' then '창의적'
-    when tc.name = 'collection' then '수집성'
-    else tc.name
-    end as category_name,
+    `SELECT c.* , p.name , p.image ,p.price,
+    CASE
+    WHEN tc.name = 'creative' THEN '창의적'
+    WHEN tc.name = 'collection' THEN '수집성'
+    ELSE tc.name
+    END as category_name,
     c.quantity * p.price as total_price
-    from cart c 
-    join products p on c.products_id = p.id
-    join category tc on p.category_id = tc.id
-    where c.users_id = ?`,
+    FROM cart c 
+    JOIN products p ON c.products_id = p.id
+    JOIN category tc ON p.category_id = tc.id
+    WHERE c.users_id = ?`,
     [userId]
   );
   result.forEach((item) => {
@@ -53,7 +63,10 @@ const selectCart = async (userId) => {
 
 const updateCart = async (productId, quantityDifference, userId) => {
   const result = await appDataSource.query(
-    `update cart set quantity = quantity ${quantityDifference} 1 where products_id = ? and users_id = ?`,
+    `UPDATE cart 
+    SET quantity = quantity ${quantityDifference} 1 
+    WHERE products_id = ? 
+    AND users_id = ?`,
     [productId, userId]
   );
   return result;
@@ -62,7 +75,10 @@ const updateCart = async (productId, quantityDifference, userId) => {
 const getCartQuantity = async (productId, userId) => {
   const result = await appDataSource.query(
     `
-  select quantity from cart where products_id = ? and users_id = ?
+  SELECT quantity 
+  FROM cart 
+  WHERE products_id = ? 
+  AND users_id = ?
   `,
     [productId, userId]
   );
@@ -71,7 +87,10 @@ const getCartQuantity = async (productId, userId) => {
 
 const deleteCart = async (cartId, userId) => {
   const result = await appDataSource.query(
-    `delete from cart where id = ? and users_id = ?`,
+    `DELETE 
+    FROM cart 
+    WHERE id = ? 
+    AND users_id = ?`,
     [cartId, userId]
   );
   return result;

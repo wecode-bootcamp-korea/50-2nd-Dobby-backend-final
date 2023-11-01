@@ -1,11 +1,11 @@
 const cartService = require("../services/cartService");
-const etc = require("../utils/etc");
+const auth = require("../utils/auth");
 const secretKey = process.env.SECRET_KEY;
 
 const addCartItem = async (req, res) => {
   try {
     const acccesToken = req.headers.authorization;
-    const decoded = etc.decoded(acccesToken, secretKey);
+    const decoded = auth.decoded(acccesToken, secretKey);
     const userId = decoded.userId;
 
     const productId = req.params.productId;
@@ -26,7 +26,7 @@ const addCartItem = async (req, res) => {
 const getCartItems = async (req, res) => {
   try {
     const acccesToken = req.headers.authorization;
-    const decoded = etc.decoded(acccesToken, secretKey);
+    const decoded = auth.decoded(acccesToken, secretKey);
     const userId = decoded.userId;
 
     const result = await cartService.getCartItems(userId);
@@ -39,7 +39,7 @@ const getCartItems = async (req, res) => {
 const updateCartItemQuantity = async (req, res, operation) => {
   try {
     const acccesToken = req.headers.authorization;
-    const decoded = etc.decoded(acccesToken, secretKey);
+    const decoded = auth.decoded(acccesToken, secretKey);
     const userId = decoded.userId;
 
     const productId = req.params.productId;
@@ -75,7 +75,7 @@ const decreaseCartItemQuantity = async (req, res) => {
 const deleteCartItem = async (req, res) => {
   try {
     const acccesToken = req.headers.authorization;
-    const decoded = etc.decoded(acccesToken, secretKey);
+    const decoded = auth.decoded(acccesToken, secretKey);
     const userId = decoded.userId;
 
     const cartId = req.params.cartId;
