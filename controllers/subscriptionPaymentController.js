@@ -1,19 +1,19 @@
 // /payment 이하의 계층에서 작동하는 함수
 // Persistence Layer
 const { throwErr } = require("../entity/utils")
-const { creditField } = require("../services/userService");
+const { creditField, creditDeductionField} = require("../services/userService");
 const { addressField, addressGenerationField} = require("../services/addressService");
-const { subscriptionField}  = require("../services/subscriptionService");
+const { subscriptionField, foundSubscriptionNameField}  = require("../services/subscriptionService");
 const { duplicationVerifiedSubscription, usersSubscriptionAdditionField } = require("../services/usersSubscriptionService");
 
 const subscriptionPayment = async (req, res) => {
     try {
-        // const userId = req.foundUser;
-        const userId = req.body.id; // 임시로 req.body에서 받아서 사용
+        const userId = req.foundUser;
+        // const userId = req.body.id; // 임시로 req.body에서 받아서 사용
 
         // // qs module로 query value parsing
         // const dobbyBox = getParam(req.url, "dobbyBox");
-        const dobbyBox = req.query.dobbyBox;
+        const dobbyBox = req.query["dobbyBox"];
 
 
         if (dobbyBox !== "basic" && dobbyBox !== "creative" && dobbyBox !== "collection") {
@@ -35,12 +35,12 @@ const subscriptionPayment = async (req, res) => {
         resultObj["credit"] = userCreditInt;
         result[0] = resultObj;
         // Error Handling 끝
-        res.json({message: "RECEIVING REQUEST SUCCESS", data: result}); // data: [subscription: {sub_to}]
+        return res.status(200).json({message: "GET - RESPONSE SUCCESS", data: result}); // data: [subscription: {sub_to}]
 
 
     } catch (e) {
         console.error(e);
-        res.status(e.statusCode || 500).json({message: e.message || "Error in invocation of API - GET : /payment?dobbyBox=.."});
+        return res.status(e.statusCode || 500).json({message: e.message || "Error in invocation of API - GET : /payment?dobbyBox=.."});
 
     }
 }
@@ -48,17 +48,12 @@ const subscriptionPayment = async (req, res) => {
 
 const subscriptionPaymentDone = async (req, res) => {
     try {
-        // const userId = req.foundUser;
-        const userId = req.body.id; // 임시로 req.body에서 받아서 사용
+        const userId = req.foundUser;
+        // const userId = req.body.id; // 임시로 req.body에서 받아서 사용
 
-
-        // // qs module로 query value parsing
         // const dobbyBox = getParam(req.url, "dobbyBox");
         const dobbyBox = req.body.query;
 
-        // if (dobbyBox !== "basic" && dobbyBox !== "creative" && dobbyBox !== "collection") {
-        //     throwErr(404, "QUERY TARGET SUBSCRIPTION DOES NOT EXIST OR THE TARGET IS INVALID");
-        // }
         let dobbyBoxId = 0
         if (dobbyBox ==="basic") {
             dobbyBoxId += 1;
@@ -74,19 +69,21 @@ const subscriptionPaymentDone = async (req, res) => {
         }
 
         const duplicationVerifiedSub = await duplicationVerifiedSubscription(userId, dobbyBoxId); // error 반환 시 catch로 빠진다.
+        const userCreditDeductionField = await creditDeductionField(userId, await foundSubscriptionNameField(dobbyBox)); // credit이 빼기 연산 이후에 0 미만이 되면 MYSQL PROTOCOL ERROR -- ERROR 1264 (22203)을 반환한다.
         const doneUsersSubscription = await usersSubscriptionAdditionField(userId, dobbyBoxId);
 
+        return res.redirect("/payment/done")
+        // res.status(200).json({message: "POST - SUBSCRIPTION PAYMENT DONE SUCCESS"})
     } catch (e) {
         console.error(e);
-        res.status(e.statusCode || 500).json({message: e.message || "Error in invocation of API - POST : /payment/done"});
-
+        return res.status(e.statusCode || 500).json({message: e.message || "Error in invocation of API - POST : /payment/done"});
     }
 }
 
 const paymentAddressFieldGeneration = async (req, res) => { // subscription address를 따로 만들어야 될 것 같다.
     try {
-        // const userId = req.foundUser;
-        const userId = req.body.id; // 임시로 req.body에서 받아서 사용
+        const userId = req.foundUser;
+        // const userId = req.body.id; // 임시로 req.body에서 받아서 사용
 
         // payment/address/done으로 request.body에 content, phonenumber, name이 담긴 POST REQUEST가 오지 않으면
         const { content, phonenumber, name } = req.body;
@@ -95,18 +92,43 @@ const paymentAddressFieldGeneration = async (req, res) => { // subscription addr
         }
         const genAddressField = await addressGenerationField(userId, content, phonenumber, name); // error가 반환되면 catch로 빠진다.
 
-        res.status(204).json({message: "ADDRESS ADDED SUCCESS"});
+        return res.status(204).json({message: "POST - ADDRESS ADDED SUCCESS"});
     } catch (e) {
         console.error(e);
-        res.status(e.statusCode || 500).json({message: e.message || "Error in invocation of API - POST: /payment/address/done"})
+        return res.status(e.statusCode || 500).json({message: e.message || "Error in invocation of API - POST: /payment/address/done"})
+    }
+}
+
+const sendAddress = async (req, res) => {
+    try {
+        const userId = req.foundUser;
+        // const userId = req.body.id; // 임시로 req.body에서 받아서 사용
+
+        const result = [];
+        const resultObj = {};
+        const addressDataField = await addressField(userId); // 배열 안에 1개 이상의 주소가 있다. 기존에 db에 저장된 주소 데이터가 없다면 빈 배열을 반환한다.
+        resultObj["address"] = addressDataField;
+        result[0] = resultObj;
+
+        return res.status(200).json({message: "AJAX ADDRESS SEND SUCCESS", data: result})
+    } catch (e) {
+        console.error(e);
+        return res.status(e.statusCode || 500).json({message: e.message || "Error in invocation of API - GET: /payment/address/"})
     }
 }
 
 
-// /payment/ping Health Check
-// const pingPong = async (req, res) => {
-//     res.json({message: "pong"})
-// }
+const paymentDonePage = async (req, res) => {
+    try {
+        const userId = req.foundUser;
+        // const userId = req.body.id; // 임시로 req.body에서 받아서 사용
+        return res.status(200).json({message: "SUCCESS"});
+    } catch (e) {
+        console.error(e);
+        return res.status(e.statusCode || 500).json({message: e.message || "Error in invocation of API - GET: /payment/done"})
+
+    }
+}
 
 
-module.exports = { subscriptionPayment, subscriptionPaymentDone, paymentAddressFieldGeneration }
+module.exports = { subscriptionPayment, subscriptionPaymentDone, paymentAddressFieldGeneration, sendAddress, paymentDonePage }

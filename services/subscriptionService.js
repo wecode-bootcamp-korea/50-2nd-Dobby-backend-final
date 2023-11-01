@@ -2,7 +2,7 @@
 // 명확한 return 값을 보내야 한다.
 
 const { throwErr } = require("../entity/utils");
-const { subscriptionInfo } = require("../models/subscriptionDao");
+const { subscriptionInfo, findSubscriptionPrice} = require("../models/subscriptionDao");
 
 
 const subscriptionField = async (dobbyBox) => {
@@ -17,5 +17,15 @@ const subscriptionField = async (dobbyBox) => {
     }
 }
 
+const foundSubscriptionNameField = async (dobbyBox) => {
+    try {
+        return await findSubscriptionPrice(dobbyBox);
+    } catch (e) {
+        console.error(e);
+    }
+}
 
-module.exports = { subscriptionField }
+
+
+
+module.exports = { subscriptionField, foundSubscriptionNameField }

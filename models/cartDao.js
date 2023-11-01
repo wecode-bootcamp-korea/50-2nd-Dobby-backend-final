@@ -3,17 +3,49 @@
 const { appDataSource } = require("../entity/utils")
 
 
+const makeCartPending = async (userId, cartId) => { // 카트를 결제 대기 상태(pending)로 바꿔 줍니다
+        try {
+                return await appDataSource.query(
+                    `
+                    UPDATE cart 
+                    SET 
+                    status = "PENDING" 
+                    WHERE 
+                    id = '${cartId}' 
+                    AND 
+                    status = "NONE" 
+                    AND 
+                    users_id = '${userId}'
+                    `
+                )
+        } catch (e) {
+                console.error(e);
+        }
+}
+
+
 const findCartAndProduct = async (cartId) => {
         try {
                 const productInCartData = await appDataSource.query(
                     `
-                    SELECT cart.id, cart.products_id, cart.quantity, products.name as products_name, products.price as products_price, products.image as products_image
+                    SELECT 
+                    cart.id, 
+                    cart.products_id, 
+                    cart.quantity, 
+                    products.name as products_name, 
+                    products.price as products_price, 
+                    products.image as products_image, 
+                    category.name as category_name
                     FROM 
                     cart 
                     JOIN 
                     products 
                     ON 
-                    products.id = cart.products_id
+                    cart.products_id = products.id 
+                    JOIN
+                    category
+                    ON
+                    products.category_id = category.id
                     WHERE
                     cart.id = ${cartId}
                     `
@@ -36,7 +68,7 @@ const findCart = async (userId) => {
             FROM 
             cart 
             WHERE 
-            cart.users_id = '${userId}' AND cart_status_id = 1 AND status = "PENDING"
+            cart.users_id = '${userId}' AND status = "PENDING"
                     `
                 );
         } catch (e) {
@@ -99,6 +131,6 @@ const makeCartStatusDone = async (userId) => {
 // }
 
 
-module.exports = { findCartAndProduct, findCart, revertCartStatus, makeCartStatusDone }
+module.exports = { findCartAndProduct, findCart, revertCartStatus, makeCartStatusDone, makeCartPending }
 
 

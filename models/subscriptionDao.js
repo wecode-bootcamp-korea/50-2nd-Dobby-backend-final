@@ -20,5 +20,21 @@ const subscriptionInfo = async (dobbyBox) => {
     }
 }
 
+const findSubscriptionPrice = async (dobbyBox) => {
+    try {
+        return await appDataSource.query(
+            `
+        SELECT 
+        sub_name 
+        FROM 
+        subscription 
+        WHERE sub_name = '${dobbyBox}'
+            `
+        )
+    } catch (e) {
+        console.error(e);
+    }
+}
 
-module.exports = { subscriptionInfo }
+
+module.exports = { subscriptionInfo, findSubscriptionPrice }

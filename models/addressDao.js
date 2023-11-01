@@ -20,7 +20,7 @@ const findAddress = async (userId) => {
 }
 
 
-const generateAddress = async (userId, content, phoenumber, name) => {
+const generateAddress = async (userId, content, phonenumber, name) => {
     try {
             return await appDataSource.query(
                 `
@@ -31,7 +31,7 @@ const generateAddress = async (userId, content, phoenumber, name) => {
                 (
                 '${userId}', 
                 '${content}', 
-                '${phoenumber}', 
+                '${phonenumber}', 
                 '${name}'
                 );
                 `

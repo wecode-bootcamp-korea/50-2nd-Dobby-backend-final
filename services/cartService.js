@@ -2,8 +2,22 @@
 // 명확한 return 값을 보내야 한다.
 // Business layer
 
-const { findCart, findCartAndProduct, revertCartStatus, makeCartStatusDone} = require("../models/cartDao");
+const { findCart, findCartAndProduct, revertCartStatus, makeCartStatusDone, makeCartPending} = require("../models/cartDao");
 const { throwErr } = require("../entity/utils")
+
+
+const makeCartStatusPending = async (userId, cartId) => {
+    try {
+        for (let i = 0; i < cartId.length; i++) {
+             await makeCartPending(userId, cartId[i]); // DB UPDATE
+        }
+        if (userId || cartId) {
+            return userId;
+        }
+    } catch (e) {
+        console.error(e);
+    }
+}
 
 const payTargetProductInfoField = async (userId) => {  //cartId는 id의 값만 여러 개 담긴 Array로 들어온다. [1, 2, 3, 5, ..] => userId를 받아서 일단 해당 유저의 주문 목록 cart.id를 호출하여 받아온다.(result => const cartId = result)
     try {
@@ -19,8 +33,9 @@ const payTargetProductInfoField = async (userId) => {  //cartId는 id의 값만 
         else {
             throwErr(404, "USER PAYLIST DOES NOT EXIST") // Error Handling Request한 client의 Token.id가 체크박스한 주문 목록이 없으면 error return
         }
-        console.log(result)
+        console.log(result);
         const cartId = result;  // 주문 목록을 cartDao에서 DB와 통신해서 읽어올 수 있게 cartId 주소를 만들어서 할당
+
         const cartResult = [];
         for (let i = 0; i < cartId.length; i++) {               // cartId[i] = 쇼핑카트 내역 0, 1, 2, 3, ..을 의미한다.
             console.log(cartId[i]);
@@ -62,4 +77,6 @@ const cartStatusDoneField = async(userId) => {
     }
 }
 
-module.exports = { payTargetProductInfoField, calculateTotalPrice, cartPaymentCancellationField, cartStatusDoneField }
+
+
+module.exports = { payTargetProductInfoField, calculateTotalPrice, cartPaymentCancellationField, cartStatusDoneField, makeCartStatusPending }
