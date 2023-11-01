@@ -2,7 +2,6 @@ const cartDao = require("../models/cartDao");
 const utils = require("../utils/index");
 
 const addCartItem = async (productId, quantity, userId) => {
-
   const isProductInCart = await cartDao.existsInCart(userId, productId);
 
   try {
@@ -23,14 +22,18 @@ const getCartItems = async (userId) => {
   return getCartItems;
 };
 
-const updateCartItemQuantity = async (productId, quantityDifference, userId) => {
+const updateCartItemQuantity = async (
+  productId,
+  quantityDifference,
+  userId
+) => {
   if (quantityDifference !== "+" && quantityDifference !== "-") {
     throw new Error("Invalid quantityDifference");
   }
   const currentQuantity = await cartDao.getCartQuantity(productId, userId);
 
-  if (quantityDifference === '-' && currentQuantity === 1) {
-    throw new Error ("Quantity cannot be decreased further.")
+  if (quantityDifference === "-" && currentQuantity === 1) {
+    throw new Error("Quantity cannot be decreased further.");
   }
   const updateCartItem = await cartDao.updateCart(
     productId,
@@ -42,14 +45,22 @@ const updateCartItemQuantity = async (productId, quantityDifference, userId) => 
 };
 
 const deleteCartItem = async (cartId, userId) => {
-  const deleteCartItem = await cartDao.deleteCart(cartId, userId);
+  const validateUserId = await cartDao.validateUserId(cartId);
+  console.log(validateUserId);
+  console.log(userId);
 
-  return deleteCartItem;
+  if (validateUserId === userId) {
+    const deleteCartItem = await cartDao.deleteCart(cartId);
+
+    return deleteCartItem;
+  } else {
+    throw new Error("User validation failed");
+  }
 };
 
 module.exports = {
-addCartItem,
-getCartItems,
-updateCartItemQuantity,
-deleteCartItem
+  addCartItem,
+  getCartItems,
+  updateCartItemQuantity,
+  deleteCartItem,
 };

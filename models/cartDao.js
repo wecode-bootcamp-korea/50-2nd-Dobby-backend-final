@@ -85,13 +85,24 @@ const getCartQuantity = async (productId, userId) => {
   return result;
 };
 
-const deleteCart = async (cartId, userId) => {
+const validateUserId = async (cartId) => {
+  const result = await appDataSource.query(
+    `
+  SELECT users_id
+  FROM cart 
+  WHERE id =?
+  `,
+    [cartId]
+  );
+  return result[0].users_id;
+};
+
+const deleteCart = async (cartId) => {
   const result = await appDataSource.query(
     `DELETE 
     FROM cart 
-    WHERE id = ? 
-    AND users_id = ?`,
-    [cartId, userId]
+    WHERE id = ?`,
+    [cartId]
   );
   return result;
 };
@@ -102,6 +113,7 @@ module.exports = {
   plusQuantity,
   selectCart,
   getCartQuantity,
+  validateUserId,
   updateCart,
-  deleteCart
+  deleteCart,
 };
