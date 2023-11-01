@@ -16,4 +16,4 @@ const getProductDetail = async (req, res) => {
     }
 }
 
-module.exports = { getProductDetail }gi
+module.exports = { getProductDetail }
