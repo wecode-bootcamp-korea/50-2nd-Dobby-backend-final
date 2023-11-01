@@ -3,10 +3,10 @@ const router = express.Router();
 
 const userRouter = require("./userRouter");
 const subscriptionRouter = require("./subscriptionRouter");
-const productListRouter = require("./productListRouter");
+const productRouter = require("./productRouter");
 
 router.use("/users", userRouter.router);
 router.use("/subscription", subscriptionRouter.router);
-router.use("/productList", productListRouter.router);
+router.use("/product", productRouter.router);
 
 module.exports = router;

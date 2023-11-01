@@ -11,7 +11,7 @@ const getSubscription = async (headers, query) => {
   if (!headers.authorization) {
     throwError('로그인해 주세요', 401);
   }
-
+//Postman 실험용 split 프론트랑 직접 확인 시 수정 필요
   const token = headers.authorization.split(' ')[1];
   
   let decoded;
@@ -31,11 +31,12 @@ const getSubscription = async (headers, query) => {
   }
 
   const existingSubscription = await subscriptionDao.findSubscriptionByName(subName);
+  
   if (!existingSubscription) {
     throwError('해당 구독은 이용하실 수 없습니다.', 400);
   }
 
-  return { redirectUrl: `http://127.0.0.1:8000/payment?dobbyBox=${subName}` };
+  return { redirectUrl: `http://127.0.0.1:3000/payment?dobbyBox=${subName}` };
 };
 
 module.exports = { getSubscription };
