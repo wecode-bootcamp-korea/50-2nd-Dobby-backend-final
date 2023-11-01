@@ -46,8 +46,6 @@ const updateCartItemQuantity = async (
 
 const deleteCartItem = async (cartId, userId) => {
   const validateUserId = await cartDao.validateUserId(cartId);
-  console.log(validateUserId);
-  console.log(userId);
 
   if (validateUserId === userId) {
     const deleteCartItem = await cartDao.deleteCart(cartId);
