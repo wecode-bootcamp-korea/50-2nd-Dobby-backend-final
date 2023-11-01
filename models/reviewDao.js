@@ -1,4 +1,4 @@
-const { appDataSource } = require('./dataSource');
+const appDataSource = require('./dataSource');
 
 const findReviewByProductId = async (productId) => {
       const reviews = appDataSource.query(`

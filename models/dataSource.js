@@ -22,4 +22,5 @@ appDataSource.initialize()
   });
 
 
-module.exports = { appDataSource }
+module.exports =  appDataSource 
+
