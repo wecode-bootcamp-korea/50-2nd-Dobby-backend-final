@@ -1,21 +1,20 @@
 const cartService = require("../services/cartService");
 const etc = require("../utils/etc");
-const throwError = require("../utils/index");
 const secretKey = process.env.SECRET_KEY;
 
-const addCartController = async (req, res) => {
+const addCartItem = async (req, res) => {
   try {
     const acccesToken = req.headers.authorization;
     const decoded = etc.decoded(acccesToken, secretKey);
     const userId = decoded.userId;
 
-    const productId = req.body.productId;
+    const productId = req.params.productId;
     const quantity = parseInt(req.body.quantity);
 
     if (!productId || !quantity) {
       return res.status(400).json({ message: "KEY ERROR" });
     }
-    const result = await cartService.addCartService(
+    const result = await cartService.addCartItem(
       productId,
       quantity,
       userId
@@ -26,122 +25,70 @@ const addCartController = async (req, res) => {
   }
 };
 
-const selectCartController = async (req, res) => {
+const getCartItems = async (req, res) => {
   try {
     const acccesToken = req.headers.authorization;
     const decoded = etc.decoded(acccesToken, secretKey);
     const userId = decoded.userId;
 
-    const result = await cartService.selectCartService(userId);
+    const result = await cartService.getCartItems(userId);
     return res.status(200).json({ message: "read success", data: result });
   } catch (error) {
     return res.status(error.statusCode || 500).json({ message: error.message });
   }
 };
 
-const checkBoxController = async (req, res) => {
-  try {
-    const acccesToken = req.headers.authorization;
-    const decoded = etc.decoded(acccesToken, secretKey);
-    const userId = decoded.userId;
-
-    const { cartId, statusId } = req.query;
-
-    if (!cartId || !statusId) {
-      return res.status(404).json({ message: "KEY ERROR" });
-    }
-
-    const result = await cartService.checkBoxService(userId, cartId, statusId);
-
-    return res.status(200).json({ message: "check success", data: result });
-  } catch (error) {
-    console.error(error);
-    throwError(400, "check error");
-  }
-};
-
-const allCheckBoxController = async (req, res) => {
-  try {
-    const acccesToken = req.headers.authorization;
-    const decoded = etc.decoded(acccesToken, secretKey);
-    const userId = decoded.userId;
-
-    const {statusId} = req.query;
-
-    if (!statusId) {
-      return res.status(404).json({ message: "KEY ERROR" });
-    }
-    const result = await cartService.allCheckBoxService(userId, statusId);
-    return res.status(200).json({ message: "check success", data: result });
-  } catch (error) {
-    console.error(error);
-    throwError(400, "check error");
-  }
-};
-
-const increaseCartController = async (req, res) => {
+const updateCartItemQuantity = async (req, res, operation) => {
   try {
     const acccesToken = req.headers.authorization;
     const decoded = etc.decoded(acccesToken, secretKey);
     const userId = decoded.userId;
 
     const productId = req.params.productId;
+    const quantityDifference = req.body.quantityDifference;
 
-    if (!productId) {
-      return res.status(404).json({ message: "KEY ERROR" });
+    if (!productId || !quantityDifference) {
+      return res.status(400).json({ message: "Invalid product ID or quantity difference" });
     }
 
-    const result = await cartService.updateCartService(productId, "+", userId);
-    return res.status(200).json({ message: "increase success", data: result });
+    const result = await cartService.updateCartItemQuantity(productId, quantityDifference, userId);
+    return res.status(200).json({ message: `${operation} successful`, data: result });
   } catch (error) {
     return res.status(error.statusCode || 500).json({ message: error.message });
   }
 };
 
-const decreaseCartController = async (req, res) => {
-  try {
-    const acccesToken = req.headers.authorization;
-    const decoded = etc.decoded(acccesToken, secretKey);
-    const userId = decoded.userId;
-
-    const productId = req.params.productId;
-
-    if (!productId) {
-      return res.status(404).json({ message: "KEY ERROR" });
-    }
-
-    const result = await cartService.updateCartService(productId, "-", userId);
-    return res.status(200).json({ message: "decrease success", data: result });
-  } catch (error) {
-    return res.status(error.statusCode || 500).json({ message: error.message });
-  }
+const increaseCartItemQuantity = async (req, res) => {
+  return updateCartItemQuantity(req, res, "Increase");
 };
 
-const deleteCartController = async (req, res) => {
+const decreaseCartItemQuantity = async (req, res) => {
+  return updateCartItemQuantity(req, res, "Decrease");
+};
+
+const deleteCartItem = async (req, res) => {
   try {
     const acccesToken = req.headers.authorization;
     const decoded = etc.decoded(acccesToken, secretKey);
     const userId = decoded.userId;
 
-    const productId = req.params.productId;
+    const cartId = req.params.cartId;
 
-    if (!productId) {
-      return res.status(404).json({ message: "KEY ERROR" });
+    if (!cartId) {
+      return res.status(400).json({ message: "KEY ERROR" });
     }
 
-    const result = await cartService.deleteCartService(productId, userId);
-    return result.status(200).json({ message: "delete success", data: result });
+    const result = await cartService.deleteCartItem(cartId, userId);
+    return res.status(200).json({ message: "delete success", data: result });
   } catch (error) {
     return res.status(error.statusCode || 500).json({ message: error });
   }
 };
 
 module.exports = {
-  addCartController,
-  selectCartController,
-  checkBoxController,
-  allCheckBoxController,
-  increaseCartController,
-  decreaseCartController,
-  deleteCartController,
+addCartItem,
+getCartItems,
+increaseCartItemQuantity,
+decreaseCartItemQuantity,
+deleteCartItem
 };
