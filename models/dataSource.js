@@ -1,6 +1,5 @@
 const { DataSource } = require("typeorm");
 const dotenv = require("dotenv");
-
 dotenv.config();
 
 const appDataSource = new DataSource({

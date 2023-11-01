@@ -5,13 +5,13 @@ const cors = require('cors');
 const dotenv = require("dotenv")
 dotenv.config()
 
-const router = require("./routes");
+const routes = require("./routes");
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
-app.use(router);
+app.use(routes);
 
 app.get("/ping", (req, res) => {
   res.json({ message: "pong" });
