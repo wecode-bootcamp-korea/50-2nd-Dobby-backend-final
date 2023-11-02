@@ -1,4 +1,4 @@
-const userDao = require("../models/userDao");
+const userDao = require('../models/userDao');
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const nodeMailer = require("nodemailer");
@@ -7,9 +7,9 @@ const mailPoster = nodeMailer.createTransport({
   host: "smtp.naver.com",
   port: 587,
   auth: {
-    user: "test_code@naver.com",
-    pass: process.env.SECRET_PW,
-  },
+    user: 'test_code@naver.com',
+    pass: process.env.SECRET_PW
+  }
 });
 const dotenv = require("dotenv");
 dotenv.config();
@@ -25,7 +25,7 @@ const signUp = async (data) => {
   const { email, password, name, phonenumber, nickname } = data;
 
   if (!name || !email || !password || !nickname) {
-    throwError("All fields must be filled.", 400);
+    throwError('All fields must be filled.', 400);
   }
   const existingUser = await userDao.findUserByEmail(email);
   if (existingUser.length > 0) {
@@ -75,13 +75,13 @@ const emailAuth = async ({ email }) => {
   const number = randomNumber(111111, 999999);
   const existingUser = await userDao.findUserByEmail(email);
   if (!existingUser) {
-    throwError("NON_EXISTENT_USER", 404);
+    throwError("NON_EXISTENT_USER",404);
   }
 
   const mailOption = {
-    from: "test_code@naver.com",
+    from: 'test_code@naver.com',
     to: email,
-    subject: "Dobby 인증 관련 메일 입니다.",
+    subject: 'Dobby 인증 관련 메일 입니다.',
     html:
       "<h1> 인증번호를 확인 후 홈페이지에서 입력해 주세요 </h1>" +
       "<h1>" +
@@ -96,9 +96,8 @@ const emailAuth = async ({ email }) => {
 const emailVerifyNumber = async ({ email, number, newPassword }) => {
   const authNumber = await userDao.getAuthNumberByEmail(email);
   if (number != authNumber) {
-    throwError("인증 번호가 일치하지 않습니다.", 400);
+    throwError('인증 번호가 일치하지 않습니다.', 400);
   }
-
   const saltRounds = 12;
   const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
   await userDao.updatePassword(email, hashedPassword);
@@ -128,7 +127,6 @@ const phoneAuth = async ({ phoneNumber }) => {
       from: SMS_SENDER,
       text: `안녕하세요 DOBBY입니다! 요청하신 인증번호는 ${number}입니다.`,
     });
-
     console.log(phoneNumber + "번호로 인증번호" + number + "을 전송합니다.");
   };
   await userDao.insertPhoneAuth(phoneNumber, number);
@@ -142,6 +140,7 @@ const phoneVerifyNumber = async ({ phoneNumber, number }) => {
   if (number != authNumber) {
     throwError("인증 번호가 일치하지 않습니다.", 400);
   }
+
   const user = await userDao.findUserByPhonenumber(phoneNumber);
   await userDao.deleteUserAuthNumberByPhoneNumber(phoneNumber);
   return {
@@ -149,6 +148,14 @@ const phoneVerifyNumber = async ({ phoneNumber, number }) => {
     email: user[0].email,
   };
 };
+const creditField = async (userId) => {
+  const userCredit = await userDao.findCredit(userId);    // findCredit(userId) => [{user.credit: ~}]
+  if (userCredit) {                        // existingCredit이 Null인 지
+      return await userCredit[0]["credit"];      // userCredit[0].credit => HTTP GET 요청한 유저가 보유한 uses.credit 금액 숫자
+  } else {
+      throwError(401, "CREDIT DOES NOT EXIST");
+  }
+}
 
 module.exports = {
   signUp,
@@ -157,4 +164,5 @@ module.exports = {
   emailVerifyNumber,
   phoneAuth,
   phoneVerifyNumber,
+  creditField
 };

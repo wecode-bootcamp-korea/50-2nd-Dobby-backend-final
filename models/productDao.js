@@ -1,41 +1,4 @@
-const appDataSource = require("./dataSource");
-
-const getProducts = async (categoryQuery, searchQuery, orderingQuery) => {
-  const result = await appDataSource.query(`
-    SELECT
-      p.id,
-      p.image,
-      p.name,
-      p.price,
-      AVG(c.score) AS score,
-      COUNT(c.id) AS commentCount 
-    FROM products p 
-    JOIN comments c 
-    ON p.id = c.products_id
-    WHERE 1
-    ${categoryQuery}
-    ${searchQuery}
-    GROUP BY p.id , p.image , p.name , p.price
-    ${orderingQuery}`);
-  return result;
-};
-
-const findProduct = async (productId) => {
-  const product = await appDataSource.query(`
-  SELECT 
-    p.id, 
-    p.name, 
-    p.price, 
-    p.image, 
-    p.content, 
-  IFNULL(ROUND(AVG(c.score), 1),0) as average_score
-  FROM products p
-  LEFT JOIN comments c ON p.id = c.products_id
-  WHERE p.id = ${productId}
-  GROUP BY p.id
-  `);
-  return product;
-};
+const appDataSource = require('./dataSource');
 
 const commonQuery = `
     SELECT 
@@ -75,10 +38,27 @@ const getMDRecommendations = async () => {
   return await appDataSource.query(query);
 };
 
-module.exports = {
-  getNewProducts,
+const findProduct = async (productId) => {
+  const product = await appDataSource.query(`
+  SELECT 
+    p.id, 
+    p.name, 
+    p.price, 
+    p.image, 
+    p.content, 
+  IFNULL(ROUND(AVG(c.score), 1),0) as average_score
+  FROM products p
+  LEFT JOIN comments c ON p.id = c.products_id
+  WHERE p.id = ${productId}
+  GROUP BY p.id
+  `)
+  return product
+};
+
+module.exports = { 
+  getNewProducts, 
   getBestProducts,
   getMDRecommendations,
-  findProduct,
-  getProducts,
+  findProduct
 };
+

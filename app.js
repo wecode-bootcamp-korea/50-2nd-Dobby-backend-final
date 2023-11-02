@@ -1,8 +1,8 @@
 const mysql = require('mysql2')
 const http = require('http');
 const express = require('express');
-const cors = require('cors'); 
-const dotenv = require('dotenv'); 
+const cors = require('cors');
+const dotenv = require('dotenv');
 const morgan = require("morgan")
 dotenv.config();
 
@@ -29,4 +29,4 @@ const start = async () => {
   }
 };
 
-start();
+start()

@@ -1,6 +1,18 @@
 const appDataSource = require('./dataSource');
 const mysql = require('mysql2/promise');
 
+const findCredit = async (userId) => {                          // 요청한 브라우저의 유저의 Credit(포인트)를 반환한다.
+  return await appDataSource.query(
+      `
+      SELECT credit 
+      FROM 
+      users 
+      WHERE 
+      id = '${userId}'
+      `
+  )
+}
+
 const findUserByEmail = async (email) => {
   const query = `SELECT * FROM users WHERE email = '${email}'`;
   return await appDataSource.query(query);
@@ -23,7 +35,7 @@ const createUser = async (email, hashedPw, name, phonenumber, nickname) => {
       '${nickname}'
     )
   `;
-  
+
   return await appDataSource.query(query);
 };
 
@@ -81,15 +93,16 @@ const deleteUserAuthNumberByPhoneNumber = async (phoneNumber) => {
 };
 
 
-module.exports = { 
+module.exports = {
   createUser,
   findUserByEmail,
-  insertEmaiAuth, 
-  getAuthNumberByEmail, 
+  insertEmaiAuth,
+  getAuthNumberByEmail,
   updatePassword,
   deleteUserAuthNumberByEmail,
   deleteUserAuthNumberByPhoneNumber,
   findUserByPhonenumber,
   insertPhoneAuth,
-  getAuthNumberByPhoneNumber
-};
+  getAuthNumberByPhoneNumber,
+  findCredit
+}
