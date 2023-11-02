@@ -74,10 +74,9 @@ const emailAuth = async ({ email }) => {
 
   const number = randomNumber(111111, 999999);
   const existingUser = await userDao.findUserByEmail(email);
-<<<<<<< HEAD
-  if(!existingUser){
-    throwError("NON_EXISTENT_USER",404)
-  };
+  if (!existingUser) {
+    throwError("NON_EXISTENT_USER",404);
+  }
 
   const mailOption = {
     from: 'test_code@naver.com',
