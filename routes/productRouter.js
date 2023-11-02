@@ -7,3 +7,4 @@ router.get("/:productId", productController.getProductDetail); //실행
 router.get("/productlist", productController.getProductList);
 
 module.exports.router = router;
+
