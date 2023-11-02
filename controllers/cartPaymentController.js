@@ -20,7 +20,7 @@ const updateCartStatus = async (req, res) => {
 
 const cartPayment = async (req, res) => {
     try {
-        const userId = req.foundUser;
+        const userId = auth.decoded(req.headers.authorization, secretKey)
         const result = [];
         const resultObj = {}
         const cartPayTargetInfoList = await cartService.payTargetProductInfoField(userId);
