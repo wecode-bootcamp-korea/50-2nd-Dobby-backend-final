@@ -1,17 +1,39 @@
-const express = require("express")
-const cartPaymentController = require("../controllers/cartPaymentController")
-const { tokenValidation } = require("../middlewares/tokenValidate")
+<<<<<<< HEAD
+const express = require("express");
 const router = express.Router();
-const app = express()
+const cartController = require("../controllers/cartController");
+const cartPaymentController = require("../controllers/cartPaymentController");
 
+router.post("/:productId" , cartController.addCartItem);
 
-router.use(tokenValidation);
-app.use(tokenValidation);
+router.get("/" , cartController.getCartItems);
 
+router.patch("/", cartPaymentController.updateCartStatus);
 
-router.patch("/", tokenValidation, cartPaymentController.updateCartStatus);
-router.get("/payment", tokenValidation, cartPaymentController.cartPayment);
+router.put("/increase/:productId" , cartController.increaseCartItemQuantity);
 
+router.put("/decrease/:productId" , cartController.decreaseCartItemQuantity);
+
+router.delete("/:cartId" , cartController.deleteCartItem);
+
+router.get("/payment", cartPaymentController.cartPayment);
 
 
 module.exports = { router }
+=======
+const express = require("express");
+const router = express.Router();
+const cartController = require("../controllers/cartController");
+
+router.post("/:productId" , cartController.addCartItem);
+
+router.get("/" , cartController.getCartItems);
+
+router.put("/increase/:productId" , cartController.increaseCartItemQuantity);
+
+router.put("/decrease/:productId" , cartController.decreaseCartItemQuantity);
+
+router.delete("/:cartId" , cartController.deleteCartItem);
+
+module.exports = {router};
+>>>>>>> main

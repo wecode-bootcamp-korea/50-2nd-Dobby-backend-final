@@ -1,136 +1,299 @@
-// HTTP GET 요청에 응답한 HTTP RESPONSE를 위한 함수
-// REQUEST.BODY에 내용을 담는다.
-const { appDataSource } = require("../entity/utils")
+<<<<<<< HEAD
+const appDataSource = require("./dataSource")
 
+const createCart = async (productId, quantity, userId) => {
+  const result = await appDataSource.query(
+    `INSERT INTO
+    cart (products_id , quantity , users_id)
+    VAlUES
+    (?,?,?);`,
+    [productId, quantity, userId]
+  );
 
-const makeCartPending = async (userId, cartId) => { // 카트를 결제 대기 상태(pending)로 바꿔 줍니다
-        try {
-                return await appDataSource.query(
-                    `
-                    UPDATE cart 
-                    SET 
-                    status = "PENDING" 
-                    WHERE 
-                    id = '${cartId}' 
-                    AND 
-                    status = "NONE" 
-                    AND 
-                    users_id = '${userId}'
-                    `
-                )
-        } catch (e) {
-                console.error(e);
-        }
+  return result;
+};
+
+const existsInCart = async (userId, productId) => {
+  const result = await appDataSource.query(
+    `
+  SELECT
+  COUNT(*) as count 
+  FROM cart 
+  WHERE users_id = ?
+  AND products_id = ?
+  `,
+    [userId, productId]
+  );
+  return result[0].count > 0;
+};
+
+const plusQuantity = async (userId, productId, quantity) => {
+  const result = await appDataSource.query(
+    `
+  UPDATE cart 
+  SET quantity = quantity + ? 
+  WHERE users_id = ? 
+  AND products_id = ?
+`,
+    [quantity, userId, productId]
+  );
+  return result;
+};
+
+const selectCart = async (userId) => {
+  const result = await appDataSource.query(
+    `SELECT c.* , p.name , p.image ,p.price,
+    CASE
+    WHEN tc.name = 'creative' THEN '창의적'
+    WHEN tc.name = 'collection' THEN '수집성'
+    ELSE tc.name
+    END as category_name,
+    c.quantity * p.price as total_price
+    FROM cart c 
+    JOIN products p ON c.products_id = p.id
+    JOIN category tc ON p.category_id = tc.id
+    WHERE c.users_id = ?`,
+    [userId]
+  );
+  result.forEach((item) => {
+    item.total_price = parseInt(item.total_price);
+  });
+
+  return result;
+};
+
+const updateCart = async (productId, quantityDifference, userId) => {
+  const result = await appDataSource.query(
+    `UPDATE cart 
+    SET quantity = quantity ${quantityDifference} 1 
+    WHERE products_id = ? 
+    AND users_id = ?`,
+    [productId, userId]
+  );
+  return result;
+};
+
+const getCartQuantity = async (productId, userId) => {
+  const result = await appDataSource.query(
+    `
+  SELECT quantity 
+  FROM cart 
+  WHERE products_id = ? 
+  AND users_id = ?
+  `,
+    [productId, userId]
+  );
+  return result;
+};
+
+const validateUserId = async (cartId) => {
+  const result = await appDataSource.query(
+    `
+  SELECT users_id
+  FROM cart 
+  WHERE id =?
+  `,
+    [cartId]
+  );
+  return result[0].users_id;
+};
+
+const deleteCart = async (cartId) => {
+  const result = await appDataSource.query(
+    `DELETE 
+    FROM cart 
+    WHERE id = ?`,
+    [cartId]
+  );
+  return result;
+};
+
+const updateCartStatus = async (cartId, status) => { // 카트를 결제 대기 상태(pending)로 바꿔 줍니다
+  return await appDataSource.query(
+    `
+    UPDATE cart 
+    SET 
+    status = "${status}" 
+    WHERE 
+    id = '${cartId}' 
+    `
+  )
 }
 
-
 const findCartAndProduct = async (cartId) => {
-        try {
-                const productInCartData = await appDataSource.query(
-                    `
-                    SELECT 
-                    cart.id, 
-                    cart.products_id, 
-                    cart.quantity, 
-                    products.name as products_name, 
-                    products.price as products_price, 
-                    products.image as products_image, 
-                    category.name as category_name
-                    FROM 
-                    cart 
-                    JOIN 
-                    products 
-                    ON 
-                    cart.products_id = products.id 
-                    JOIN
-                    category
-                    ON
-                    products.category_id = category.id
-                    WHERE
-                    cart.id = ${cartId}
-                    `
-                );
-                const productInfoObj = productInCartData[0];
-                productInfoObj["total_price"] = parseInt(productInfoObj["products_price"]) * parseInt(productInfoObj["quantity"]); // integer * integer
-                console.log(productInfoObj)
-                return await productInCartData;                                       // [{'':'', "":"", "":"", ..}]
-        } catch (e) {
-                console.error(e)
-        }
+  const productInCartData = await appDataSource.query(
+    `
+    SELECT 
+    cart.id, 
+    cart.products_id, 
+    cart.quantity, 
+    products.name as products_name, 
+    products.price as products_price, 
+    products.image as products_image, 
+    category.name as category_name
+    FROM 
+    cart 
+    JOIN 
+    products 
+    ON 
+    cart.products_id = products.id 
+    JOIN
+    category
+    ON
+    products.category_id = category.id
+    WHERE
+    cart.id = ${cartId}
+    `
+  );
+  const productInfoObj = productInCartData[0];
+  productInfoObj["total_price"] = parseInt(productInfoObj["products_price"]) * parseInt(productInfoObj["quantity"]); // integer * integer
+  return await productInCartData;
 }
 
 const findCart = async (userId) => {
-        try {
-                return await appDataSource.query(
-                    `
-            SELECT 
-            id 
-            FROM 
-            cart 
-            WHERE 
-            cart.users_id = '${userId}' AND status = "PENDING"
-                    `
-                );
-        } catch (e) {
-                console.error(e);
-        }
+  return await appDataSource.query(
+    `
+    SELECT 
+    id 
+    FROM 
+    cart 
+    WHERE 
+    cart.users_id = '${userId}' AND status = "PENDING"
+    `
+  );
 }
 
-// 주문 취소 button => cart.status => NONE. PATCH 204
-const revertCartStatus = async (userId) => {
-        try {
-                return await appDataSource.query(
-                    `
-                    UPDATE cart 
-                    SET 
-                    status = "NONE" 
-                    WHERE 
-                    users_id = '${userId}' AND status = "PENDING"
-                    `
-                );
-        } catch (e) {
-                console.error(e);
-        }
+module.exports = {
+  createCart,
+  existsInCart,
+  plusQuantity,
+  selectCart,
+  getCartQuantity,
+  validateUserId,
+  updateCart,
+  deleteCart,
+  findCartAndProduct,
+  findCart,
+  updateCartStatus
 }
+=======
+const appDataSource = require("./dataSource");
 
+const createCart = async (productId, quantity, userId) => {
+  const result = await appDataSource.query(
+    `INSERT INTO
+    cart (products_id , quantity , users_id)
+    VAlUES
+    (?,?,?);`,
+    [productId, quantity, userId]
+  );
 
+  return result;
+};
 
-const makeCartStatusDone = async (userId) => {
-        try {
-                return await appDataSource.query(
-                    `
-                    UPDATE cart 
-                    SET 
-                    status = "DONE" 
-                    WHERE 
-                    users_id = '${userId}' AND status = "PENDING"
-                    `
-                );
-        } catch(e) {
-                console.error(e);
-        }
-}
+const existsInCart = async (userId, productId) => {
+  const result = await appDataSource.query(
+    `
+  SELECT
+  COUNT(*) as count 
+  FROM cart 
+  WHERE users_id = ?
+  AND products_id = ?
+  `,
+    [userId, productId]
+  );
+  return result[0].count > 0;
+};
 
+const plusQuantity = async (userId, productId, quantity) => {
+  const result = await appDataSource.query(
+    `
+  UPDATE cart 
+  SET quantity = quantity + ? 
+  WHERE users_id = ? 
+  AND products_id = ?
+`,
+    [quantity, userId, productId]
+  );
+  return result;
+};
 
-// 추가 구현 사항
-// const cancelOrder = async (userId, orderRandom) => {
-//         try {
-//                 return await appDataSource.query(
-//                     `
-//                     UPDATE products, order
-//                     JOIN
-//                     products ON products.id = order.products_id
-//                     SET products.sales = products.sales - order.quantity
-//                     WHERE
-//                     order.users_id = '${userId}' AND order.order_random = '${orderRandom}'
-//                     `
-//                 )
-//         } catch (e) {
-//                 console.error(e)
-//         }
-// }
+const selectCart = async (userId) => {
+  const result = await appDataSource.query(
+    `SELECT c.* , p.name , p.image ,p.price,
+    CASE
+    WHEN tc.name = 'creative' THEN '창의적'
+    WHEN tc.name = 'collection' THEN '수집성'
+    ELSE tc.name
+    END as category_name,
+    c.quantity * p.price as total_price
+    FROM cart c 
+    JOIN products p ON c.products_id = p.id
+    JOIN category tc ON p.category_id = tc.id
+    WHERE c.users_id = ?`,
+    [userId]
+  );
+  result.forEach((item) => {
+    item.total_price = parseInt(item.total_price);
+  });
 
+  return result;
+};
 
-module.exports = { findCartAndProduct, findCart, revertCartStatus, makeCartStatusDone, makeCartPending }
+const updateCart = async (productId, quantityDifference, userId) => {
+  const result = await appDataSource.query(
+    `UPDATE cart 
+    SET quantity = quantity ${quantityDifference} 1 
+    WHERE products_id = ? 
+    AND users_id = ?`,
+    [productId, userId]
+  );
+  return result;
+};
 
+const getCartQuantity = async (productId, userId) => {
+  const result = await appDataSource.query(
+    `
+  SELECT quantity 
+  FROM cart 
+  WHERE products_id = ? 
+  AND users_id = ?
+  `,
+    [productId, userId]
+  );
+  return result;
+};
 
+const validateUserId = async (cartId) => {
+  const result = await appDataSource.query(
+    `
+  SELECT users_id
+  FROM cart 
+  WHERE id =?
+  `,
+    [cartId]
+  );
+  return result[0].users_id;
+};
+
+const deleteCart = async (cartId) => {
+  const result = await appDataSource.query(
+    `DELETE 
+    FROM cart 
+    WHERE id = ?`,
+    [cartId]
+  );
+  return result;
+};
+
+module.exports = {
+  createCart,
+  existsInCart,
+  plusQuantity,
+  selectCart,
+  getCartQuantity,
+  validateUserId,
+  updateCart,
+  deleteCart,
+};
+>>>>>>> main

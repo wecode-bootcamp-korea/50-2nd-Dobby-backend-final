@@ -1,44 +1,67 @@
-const http = require('http')
-const express = require('express')
+<<<<<<< HEAD
+  const mysql = require('mysql2')
+const http = require('http');
+const express = require('express');
 const cors = require('cors');
-const morgan = require('morgan');
-const routes = require("./routes");
-// const qs = require("qs")
-const {DataSource} = require("typeorm");
-const dotenv = require('dotenv')
-dotenv.config()
+const dotenv = require('dotenv');
+const morgan = require("morgan")
+dotenv.config();
 
-const appDataSource = new DataSource(
-    {
-        type: "mysql",
-        host: process.env.TYPEORM_HOST,
-        port: '3306',
-        username: process.env.TYPEORM_USERNAME,
-        password: process.env.TYPEORM_PASSWORD,
-        database: process.env.TYPEORM_DATABASE
-    }
-)
+const routes = require('./routes');
+const app = express();
 
-const app = express()
-
+app.use(morgan("combined"))
 app.use(cors());
-app.use(morgan('combined'));
 app.use(express.json());
 app.use(routes);
 
-
+app.get("/ping", (req, res) => {
+  res.json({ message: "pong" });
+});
 
 const server = http.createServer(app);
-const PORT = 8000;
+const PORT = process.env.PORT;
+
 const start = async () => {
-    try {
-        appDataSource.initialize().then(
-            () =>
-        server.listen(PORT, () => console.log('Server is listening on 8000')));
-    } catch (err) {
-        console.error(err)
-    }
-}
+  try {
+    server.listen(PORT, () => console.log(`WELCOME-50-2st-Bteam-SERVER! ${PORT}`));
+  } catch (err) {
+    console.error(err);
+  }
+};
 
+start();
+=======
+const mysql = require('mysql2')
+const http = require('http');
+const express = require('express');
+const cors = require('cors'); 
+const dotenv = require('dotenv'); 
+const morgan = require("morgan")
+dotenv.config();
 
-start()
+const routes = require('./routes');
+const app = express();
+
+app.use(morgan("combined"))
+app.use(cors());
+app.use(express.json());
+app.use(routes);
+
+app.get("/ping", (req, res) => {
+  res.json({ message: "pong" });
+});
+
+const server = http.createServer(app);
+const PORT = process.env.PORT;
+
+const start = async () => {
+  try {
+    server.listen(PORT, () => console.log(`WELCOME-50-2st-Bteam-SERVER! ${PORT}`));
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+start();
+>>>>>>> main

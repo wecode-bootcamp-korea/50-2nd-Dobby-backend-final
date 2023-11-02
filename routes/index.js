@@ -1,8 +1,35 @@
-const express = require("express")
+<<<<<<< HEAD
+const express = require('express');
 const router = express.Router();
 
-const cartRouter = require("./cartRouter")
+const userRouter = require("./userRouter");
+const subscriptionRouter = require("./subscriptionRouter");
+const productRouter = require("./productRouter");
 
-router.use("/cart", cartRouter.router)
+const cartRouter = require("./cartRouter");
 
-module.exports =  router // 모듈로 빼야 한다.
+router.use("/users", userRouter.router);
+router.use("/subscription", subscriptionRouter.router);
+router.use("/products", productRouter.router);
+
+router.use("/cart", cartRouter.router);
+
+module.exports = router;
+=======
+const express = require('express');
+const router = express.Router(); 
+
+const userRouter = require("./userRouter");
+const subscriptionRouter = require("./subscriptionRouter");
+const productRouter = require("./productRouter");
+
+const cartRouter = require("./cartRouter");
+
+router.use("/users", userRouter.router);
+router.use("/subscription", subscriptionRouter.router);
+router.use("/products", productRouter.router);
+
+router.use("/cart", cartRouter.router);
+
+module.exports = router;
+>>>>>>> main
