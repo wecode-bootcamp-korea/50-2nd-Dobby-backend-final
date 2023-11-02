@@ -23,7 +23,7 @@ const logIn = async (req, res) => {
 const emailAuth = async (req,res) =>{
   try{
     await userService.emailAuth(req.body);
-    res.send('인증 메일을 전송했습니다.');
+    res.send('인증 메일을 전송했습니다');
   } catch (error){
     console.log(error);
     res.status(500).send('메일 전송 실패');
