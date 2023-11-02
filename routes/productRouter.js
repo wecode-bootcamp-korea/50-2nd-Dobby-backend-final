@@ -4,4 +4,6 @@ const productController = require("../controllers/productController");
 
 router.get("/", productController.getAllProducts);
 
+router.get("/:productId", productController.getProductDetail); //실행
+
 module.exports = { router };

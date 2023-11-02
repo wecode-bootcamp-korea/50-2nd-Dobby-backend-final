@@ -6,6 +6,12 @@ const getAllProducts = async (req, res) => {
   return result;
 };
 
+const getProduct = async (productId) => {
+  const product = await productDao.findProduct(productId);
+  return product;
+};
+
 module.exports = {
   getAllProducts,
+  getProduct,
 };
