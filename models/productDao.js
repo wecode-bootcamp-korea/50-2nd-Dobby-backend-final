@@ -1,12 +1,13 @@
 const appDataSource = require("./dataSource");
 
-const getAllProducts = async (req, res) => {
+const getAllProducts = async (categoryQuery, searchQuery, orderingQuery) => {
   const result = await appDataSource.query(
     `SELECT p.id , p.image , p.name , p.price , AVG(c.score) AS score , count(c.id) AS commentCount 
     FROM products p 
     JOIN comments c 
-    ON p.id = c.products_id 
-    GROUP BY p.id , p.image , p.name , p.price`
+    ON p.id = c.products_id
+    WHERE 1 ${categoryQuery} ${searchQuery}
+    GROUP BY p.id , p.image , p.name , p.price ${orderingQuery}`
   );
   return result;
 };
@@ -66,12 +67,10 @@ const getMDRecommendations = async () => {
   return await appDataSource.query(query);
 };
 
-
-module.exports = { 
-  getNewProducts, 
+module.exports = {
+  getNewProducts,
   getBestProducts,
   getMDRecommendations,
   findProduct,
-  getAllProducts
+  getAllProducts,
 };
-
