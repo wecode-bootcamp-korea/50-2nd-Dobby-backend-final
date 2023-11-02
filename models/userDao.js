@@ -1,4 +1,4 @@
-const { appDataSource } = require('./dataSource');
+const appDataSource = require('./dataSource');
 const mysql = require('mysql2/promise');
 
 const findUserByEmail = async (email) => {

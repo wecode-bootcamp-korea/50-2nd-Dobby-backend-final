@@ -20,5 +20,5 @@ appDataSource.initialize()
         console.error("Error occured during Data Source initialization", err)
     })
 
-module.exports = {appDataSource};
+module.exports = appDataSource;
 

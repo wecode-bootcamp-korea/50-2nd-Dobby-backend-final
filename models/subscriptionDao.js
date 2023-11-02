@@ -1,4 +1,4 @@
-const { appDataSource } = require('./dataSource');
+const appDataSource = require('./dataSource');
 
 const findUserById = async (userId) => {
     const query = `SELECT id, name FROM users WHERE id = '${userId}'`;

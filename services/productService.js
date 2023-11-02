@@ -8,4 +8,13 @@ const getAllProducts = async () => {
   return { newProducts, bestProducts, mdRecommendation };
 };
 
-module.exports = { getAllProducts };
+const getProduct = async (productId) => {
+  const product = await productDao.findProduct(productId);
+  return product;
+} 
+
+module.exports = { getAllProducts,getProduct };
+
+
+
+
