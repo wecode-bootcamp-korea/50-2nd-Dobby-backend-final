@@ -55,12 +55,13 @@ const logIn = async (data) => {
     throwError("Entered password is not valid.", 400);
   }
 
-  const token = jwt.sign({ userId: user[0].id, email: user[0].email }, process.env.SECRET_KEY);
+  const token = jwt.sign({ userId: user[0].id, email: user[0].email, nickname: user[0].nickname }, process.env.SECRET_KEY);
   return {
     message: "LOG_IN_SUCCESS",
     token: token,
     email: user[0].email,
-    userId: user[0].id
+    userId: user[0].id,
+    nickname: user[0].nickname
   };
 };
 
@@ -88,6 +89,7 @@ const emailAuth = async ({email}) => {
 };
 
 const emailVerifyNumber = async ({ email, number, newPassword }) => {
+  console.log(number,email,newPassword)
   const authNumber = await userDao.getAuthNumberByEmail(email);
   if (number != authNumber) {
       throwError('인증 번호가 일치하지 않습니다.', 400);
@@ -96,7 +98,7 @@ const emailVerifyNumber = async ({ email, number, newPassword }) => {
   const saltRounds = 12;
   const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
   await userDao.updatePassword(email, hashedPassword);
-  await userDao.deleteUserAuthNumber(email);
+  await userDao.deleteUserAuthNumberByEmail(email);
   return true;
 };
 
@@ -130,14 +132,19 @@ const phoneAuth = async ({phoneNumber}) => {
 };
   
 const phoneVerifyNumber = async ({ phoneNumber, number }) => {
+  console.log(phoneNumber,number);
   const authNumber = await userDao.getAuthNumberByPhoneNumber(phoneNumber);
+  console.log(authNumber);
   if (number != authNumber) {
       throwError('인증 번호가 일치하지 않습니다.', 400);
   };
   
   const user = await userDao.findUserByPhonenumber(phoneNumber);
   await userDao.deleteUserAuthNumberByPhoneNumber(phoneNumber);
-  return user[0].email;
+  return {
+    message: "FIND_ID_SUCCESS",
+    email: user[0].email
+  }
 };
 
 module.exports ={
