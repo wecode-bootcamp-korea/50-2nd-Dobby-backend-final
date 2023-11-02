@@ -3,10 +3,20 @@ const reviewService = require("../services/reviewService");
 
 const getAllProducts = async (req, res) => {
   try {
-    const result = await productService.getAllProducts();
+    const result = await productService.getAllProductsList();
     return res.status(200).json({ message: result });
   } catch (error) {
     return res.status(500).json({ message: error.message });
+  }
+};
+
+const getProductList = async (req, res) => {
+  try {
+    const result = await productService.getAllProducts();
+    res.status(200).json(result);
+  } catch (error) {
+    console.log(error);
+    res.status(error.statusCode || 500).json({ message: error.message });
   }
 };
 
@@ -28,4 +38,5 @@ const getProductDetail = async (req, res) => {
 module.exports = {
   getAllProducts,
   getProductDetail,
+  getProductList,
 };
