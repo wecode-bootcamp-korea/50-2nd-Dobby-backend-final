@@ -21,7 +21,6 @@ const updateCartStatus = async (req, res) => {
 const cartPayment = async (req, res) => {
     try {
         const userId = req.foundUser;
-        console.log(userId)
         const result = [];
         const resultObj = {}
         const cartPayTargetInfoList = await cartService.payTargetProductInfoField(userId);
