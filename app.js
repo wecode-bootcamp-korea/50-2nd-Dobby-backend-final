@@ -1,5 +1,5 @@
 <<<<<<< HEAD
-  const mysql = require('mysql2')
+const mysql = require('mysql2')
 const http = require('http');
 const express = require('express');
 const cors = require('cors');
