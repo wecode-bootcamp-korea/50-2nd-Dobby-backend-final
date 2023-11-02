@@ -1,6 +1,6 @@
 const productDao = require("../models/productDao");
 
-const getAllProductsList = async (category, sortBy, search) => {
+const getProductsList = async (category, sortBy, search) => {
   const ordering = async (sortBy) => {
     const sortOptions = {
       priceAsc: "ORDER BY p.price ASC , p.id ASC",
@@ -20,7 +20,7 @@ const getAllProductsList = async (category, sortBy, search) => {
 
   const categoryQuery = category ? `AND p.category_id = ${category}` : "";
 
-  const result = await productDao.getAllProducts(
+  const result = await productDao.getProducts(
     categoryQuery,
     searchQuery,
     orderingQuery
@@ -43,7 +43,7 @@ const getProduct = async (productId) => {
 };
 
 module.exports = {
-  getAllProductsList,
+  getProductsList,
   getAllProducts,
   getProduct,
 };

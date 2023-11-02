@@ -1,11 +1,11 @@
 const productService = require("../services/productService");
 const reviewService = require("../services/reviewService");
 
-const getAllProducts = async (req, res) => {
+const getProducts = async (req, res) => {
   try {
     let { category, sortBy, search } = req.query;
 
-    const result = await productService.getAllProductsList(
+    const result = await productService.getProductsList(
       category,
       sortBy,
       search
@@ -42,7 +42,7 @@ const getProductDetail = async (req, res) => {
 };
 
 module.exports = {
-  getAllProducts,
+  getProducts,
   getProductDetail,
   getProductList,
 };
