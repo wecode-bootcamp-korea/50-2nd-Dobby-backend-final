@@ -1,12 +1,14 @@
-const http = require("http");
-const express = require("express");
-const cors = require("cors");
-const dotenv = require("dotenv");
+const http = require('http');
+const express = require('express');
+const cors = require('cors'); 
+const dotenv = require('dotenv'); 
+const morgan = require("morgan")
 dotenv.config();
 
-const routes = require("./routes");
+const routes = require('./routes');
 
 const app = express();
+app.use(morgan("combined"))
 app.use(cors());
 app.use(express.json());
 
