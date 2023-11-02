@@ -2,11 +2,11 @@
 //  cartPaymentController에서 호출.
 
 // const { throwErr } = require("../entity/utils")
-const {findAddress, generateAddress} = require("../models/addressDao");
+const {findAddress} = require("../models/addressDao");
 
 const  addressField = async (userId) => {
     try {
-        return await findAddress(userId); // [] 빈 배열이어도 controller에서는 undefined로 return
+        return await findAddress(userId); // [] 빈 배열이어도 return
     } catch (e) {
         console.error(e)
     }
@@ -14,13 +14,5 @@ const  addressField = async (userId) => {
 }
 
 
-const addressGenerationField = async (userId, content, phonenumber, name) => {
-    try {
-            return await generateAddress(userId, content, phonenumber, name); // error가 발생하면 catch로 빠진다.
-    } catch (e) {
-        console.error(e);
-    }
-}
 
-
-module.exports = { addressField, addressGenerationField }
+module.exports = { addressField }

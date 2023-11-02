@@ -20,25 +20,4 @@ const findAddress = async (userId) => {
 }
 
 
-const generateAddress = async (userId, content, phonenumber, name) => {
-    try {
-            return await appDataSource.query(
-                `
-                INSERT 
-                INTO 
-                address(users_id, content, phonenumber, name) 
-                VALUES 
-                (
-                '${userId}', 
-                '${content}', 
-                '${phonenumber}', 
-                '${name}'
-                );
-                `
-            )
-    } catch (e) {
-        console.error(e);
-    }
-}
-
-module.exports = { findAddress, generateAddress }
+module.exports = { findAddress }

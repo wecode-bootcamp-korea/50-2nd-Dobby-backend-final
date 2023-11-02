@@ -2,7 +2,7 @@
 // 명확한 return 값을 보내야 한다.
 // Business layer
 
-const { findCart, findCartAndProduct, revertCartStatus, makeCartStatusDone, makeCartPending} = require("../models/cartDao");
+const { findCart, findCartAndProduct, makeCartPending} = require("../models/cartDao");
 const { throwErr } = require("../entity/utils")
 
 
@@ -61,22 +61,5 @@ const calculateTotalPrice = async (cartResult) => {
     }
 }
 
-const cartPaymentCancellationField = async (userId) => {
-    try {
-        return await revertCartStatus(userId);
-    } catch(e) {
-        console.error(e);
-    }
-}
 
-const cartStatusDoneField = async(userId) => {
-    try {
-            return await makeCartStatusDone(userId);
-    } catch (e) {
-        console.error(e);
-    }
-}
-
-
-
-module.exports = { payTargetProductInfoField, calculateTotalPrice, cartPaymentCancellationField, cartStatusDoneField, makeCartStatusPending }
+module.exports = { payTargetProductInfoField, calculateTotalPrice, makeCartStatusPending }
