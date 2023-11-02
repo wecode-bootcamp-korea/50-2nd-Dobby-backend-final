@@ -150,10 +150,22 @@ const phoneVerifyNumber = async ({ phoneNumber, number }) => {
 };
 const creditField = async (userId) => {
   const userCredit = await userDao.findCredit(userId);    // findCredit(userId) => [{user.credit: ~}]
-  if (userCredit) {                        // existingCredit이 Null인 지
-      return await userCredit[0]["credit"];      // userCredit[0].credit => HTTP GET 요청한 유저가 보유한 uses.credit 금액 숫자
+  if (userCredit) {
+      return userCredit[0]["credit"];      // userCredit[0].credit => HTTP GET 요청한 유저가 보유한 uses.credit 금액 숫자
   } else {
       throwError(401, "CREDIT DOES NOT EXIST");
+  }
+}
+
+const updateCredit = async (userId, paymentPrice) => {
+  return await userDao.updateCredit(userId, paymentPrice);
+}
+
+const creditDeduction = async (userId, paymentPrice) => {
+  try {
+    return await userDao.updateCredit(userId, paymentPrice);
+  } catch (e) {
+    console.error(e);
   }
 }
 
@@ -164,5 +176,7 @@ module.exports = {
   emailVerifyNumber,
   phoneAuth,
   phoneVerifyNumber,
-  creditField
+  creditField,
+  updateCredit,
+  creditDeduction
 };

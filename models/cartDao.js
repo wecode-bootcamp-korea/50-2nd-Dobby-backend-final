@@ -162,6 +162,21 @@ const findCart = async (userId) => {
   );
 }
 
+const updateStatus1To2 = async (userId, status1, status2) => {
+  try {
+    return await appDataSource.query(
+      `
+      UPDATE cart SET status = '${status2}' 
+      WHERE status = '${status1}'
+      AND users_id = '${userId}'
+      `
+    )
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+
 module.exports = {
   createCart,
   existsInCart,
@@ -173,5 +188,6 @@ module.exports = {
   deleteCart,
   findCartAndProduct,
   findCart,
-  updateCartStatus
+  updateCartStatus,
+  updateStatus1To2
 }

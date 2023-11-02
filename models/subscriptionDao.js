@@ -10,4 +10,38 @@ const findSubscriptionByName = async (subName) => {
   return await appDataSource.query(query);
 };
 
-module.exports = { findUserById, findSubscriptionByName };
+const subscriptionData = async (dobbyBox) => {
+  try {
+    return await appDataSource.query(
+      `
+        SELECT id,
+        sub_price,
+        sub_name
+        FROM 
+        subscription 
+        WHERE sub_name = '${dobbyBox}'
+        `
+    )
+  } catch(e) {
+    console.error(e);
+  }
+}
+
+const findSubscriptionPrice = async (dobbyBox) => {
+  try {
+    return await appDataSource.query(
+    `
+      SELECT 
+      sub_price
+      FROM 
+      subscription 
+      WHERE sub_name = '${dobbyBox}'
+    `
+    )
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+
+module.exports = { findUserById, findSubscriptionByName, subscriptionData, findSubscriptionPrice };

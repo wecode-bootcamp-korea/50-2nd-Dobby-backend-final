@@ -39,4 +39,26 @@ const getSubscription = async (headers, query) => {
   return { redirectUrl: `http://127.0.0.1:3000/payment?dobbyBox=${subName}` };
 };
 
-module.exports = { getSubscription };
+const sendSubscription = async (dobbyBox) => {
+    try {
+      const subscription = await subscriptionDao.subscriptionData(dobbyBox);
+      if (!subscription) {
+        throwError(404, "TARGET SUBSCRIPTION NOT FOUND");
+      }
+      return await subscription;
+    } catch(e) {
+      console.error(e);
+    }
+}
+
+const findSubscriptionPrice = async (dobbyBox) => {
+  try {
+    const foundPrice = await subscriptionDao.findSubscriptionPrice(dobbyBox);
+    const subscriptionPrice = foundPrice[0]["sub_price"];
+    return await subscriptionPrice;
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+module.exports = { getSubscription, sendSubscription, findSubscriptionPrice };

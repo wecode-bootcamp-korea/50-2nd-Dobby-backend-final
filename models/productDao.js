@@ -75,10 +75,33 @@ const getMDRecommendations = async () => {
   return await appDataSource.query(query);
 };
 
+const updateSales = async (userId) => {
+  try {
+    return await appDataSource.query(
+        `
+        UPDATE 
+        products
+        LEFT JOIN 
+        cart 
+        ON products.id = cart.products_id
+        SET products.sales = products.sales + cart.quantity
+        WHERE 
+        cart.users_id = '${userId}' 
+        AND 
+        cart.status = "DONE"
+      `
+    )
+  } catch(e) {
+    console.error(e);
+  }
+}
+
+
 module.exports = {
   getNewProducts,
   getBestProducts,
   getMDRecommendations,
   findProduct,
   getProducts,
+  updateSales
 };

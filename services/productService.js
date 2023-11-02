@@ -42,8 +42,13 @@ const getProduct = async (productId) => {
   return product;
 };
 
+const updateProductSales = async (userId) => {
+    return await productDao.updateSales(userId);
+}
+
 module.exports = {
   getProductsList,
   getAllProducts,
   getProduct,
+  updateProductSales
 };

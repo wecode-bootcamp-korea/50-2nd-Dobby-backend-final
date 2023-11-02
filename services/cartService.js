@@ -96,6 +96,19 @@ const deleteCartItem = async (cartId, userId) => {
   }
 };
 
+const updateStatusRevert = async (userId) => {
+  const status2 = "NONE"
+  const status1 = "PENDING"
+  const statusChanged = await cartDao.updateStatus1To2(userId, status1, status2);
+  return await statusChanged;
+}
+
+const updateStatusFinishDone = async (userId) => {
+  const status1 = "PENDING"
+  const status2 = "DONE"
+  return await cartDao.updateStatus1To2(userId, status1, status2);
+}
+
 module.exports = {
   addCartItem,
   getCartItems,
@@ -103,5 +116,7 @@ module.exports = {
   deleteCartItem,
   payTargetProductInfoField,
   calculateTotalPrice,
-  updateCartStatusToPending
+  updateCartStatusToPending,
+  updateStatusRevert,
+  updateStatusFinishDone
 };
