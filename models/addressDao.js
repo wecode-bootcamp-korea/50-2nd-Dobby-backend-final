@@ -1,4 +1,4 @@
-const {appDataSource} = require("../entity/utils");
+const { appDataSource } = require("./dataSource")
 const findAddress = async (userId) => {
     return await appDataSource.query(
         `
