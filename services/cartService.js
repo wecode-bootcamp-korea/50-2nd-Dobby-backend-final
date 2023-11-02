@@ -23,17 +23,14 @@ const payTargetProductInfoField = async (userId) => {  //cartId는 id의 값만 
   else {
       utils.throwError(404, "USER PAYLIST DOES NOT EXIST") // Error Handling Request한 client의 Token.id가 체크박스한 주문 목록이 없으면 error return
   }
-  console.log(result);
   const cartId = result;  // 주문 목록을 cartDao에서 DB와 통신해서 읽어올 수 있게 cartId 주소를 만들어서 할당
 
   const cartResult = [];
   for (let i = 0; i < cartId.length; i++) {               // cartId[i] = 쇼핑카트 내역 0, 1, 2, 3, ..을 의미한다.
-      console.log(cartId[i]);
       let cartResultArray = await cartDao.findCartAndProduct(cartId[i]);     // cart.id, cart.products_id, cart.quantity, products.name, products.price, products.image, total_price   *이 라인은 O(1), for로 보면 O(n)이다.
     cartResult[i] = cartResultArray[0]
   }
-  console.log("cartData returns: ", cartResult);          // for 문은 내의 await은 for의 병렬처리로 인해 promise를 병렬적으로 기다리게 해 준다.    // cartDao.findCartAndProduct가 error를 반환하면 catch로 빠진다.
-  return cartResult;                                      // [{},{},{},..]
+  return cartResult;
 }
 
 const calculateTotalPrice = async (cartResult) => {
