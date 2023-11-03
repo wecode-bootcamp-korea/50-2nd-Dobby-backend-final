@@ -23,7 +23,7 @@ const logIn = async (req, res) => {
 const emailAuth = async (req,res) =>{
   try{
     await userService.emailAuth(req.body);
-    res.send('인증 메일을 전송했습니다');
+    res.status(200).json({message:"AUTHENTICATION_MAIL_SUCCESS"});
   } catch (error){
     console.log(error);
     res.status(500).send('메일 전송 실패');
@@ -34,7 +34,7 @@ const emailVerifyNumber = async (req,res) =>{
   try{
     const result = await userService.emailVerifyNumber(req.body);
     if (result){
-      res.send('인증 및 비밀번호 변경 성공!');
+      res.status(200).json({message:"AUTHENTICATION_PASSWORD_SUCCESS"});
     } else {
       res.status(400).send('인증에 실패 했습니다!');
     }
@@ -48,7 +48,7 @@ const emailVerifyNumber = async (req,res) =>{
 const phoneAuth = async (req,res) =>{
   try{
     await userService.phoneAuth(req.body);
-    res.send('인증 번호를 전송했습니다.');
+    res.send('AUTHENTICATION_NUMBER_SUCCESS');
     } catch (error){
     console.log(error);
     res.status(500).send('인증 번호 전송에 실패했습니다');

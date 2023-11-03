@@ -17,5 +17,14 @@ router.delete("/:cartId" , cartController.deleteCartItem);
 
 router.get("/payment", cartPaymentController.cartPayment);
 
+router.patch("/payment", cartPaymentController.updateStatusSalesCredit);
 
-module.exports = { router }
+router.patch("/payment/reversion", cartPaymentController.revertCartPayment)
+
+router.post("/payment/address/done", cartPaymentController.addAddress);
+
+router.get("/payment/address", cartPaymentController.getAddress);
+
+
+
+module.exports.router = router;

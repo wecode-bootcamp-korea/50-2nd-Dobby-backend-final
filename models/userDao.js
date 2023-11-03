@@ -13,6 +13,22 @@ const findCredit = async (userId) => {                          // 요청한 브
   )
 }
 
+const updateCredit = async (userId, paymentPrice) => {
+    try {
+      return await appDataSource.query(
+        `
+        UPDATE users 
+        SET 
+        credit = credit - ${parseInt(paymentPrice)}
+        WHERE 
+        id = '${userId}'
+        `
+      )
+    } catch (e) {
+            console.error(e);
+    }
+}
+
 const findUserByEmail = async (email) => {
   const query = `SELECT * FROM users WHERE email = '${email}'`;
   return await appDataSource.query(query);
@@ -47,7 +63,7 @@ const findUserByPhonenumber = async (phoneNumber) => {
 
 const insertEmaiAuth = async (email, number) => {
   const query = `
-    INSERT INTO auth_table (email, auth_code) 
+    INSERT INTO auth (email, auth_code) 
     VALUES ('${email}', '${number}')
   `;
   return await appDataSource.query(query);
@@ -62,11 +78,11 @@ const insertPhoneAuth = async (phoneNumber, number) => {
 };
 
 const getAuthNumberByEmail = async (email) => {
-  const query = `SELECT auth_code FROM auth_table WHERE email = '${email}'`;
+  const query = `SELECT auth_code FROM auth WHERE email = '${email}'`;
   const rows = await appDataSource.query(query);
 
   if (rows.length === 0) return null;
-  return rows[0].auth_number;
+  return rows[0].auth_code;
 };
 
 const getAuthNumberByPhoneNumber= async (phoneNumber) => {
@@ -92,7 +108,6 @@ const deleteUserAuthNumberByPhoneNumber = async (phoneNumber) => {
   await appDataSource.query(query, [phoneNumber]);
 };
 
-
 module.exports = {
   createUser,
   findUserByEmail,
@@ -104,5 +119,6 @@ module.exports = {
   findUserByPhonenumber,
   insertPhoneAuth,
   getAuthNumberByPhoneNumber,
-  findCredit
+  findCredit,
+  updateCredit
 }
