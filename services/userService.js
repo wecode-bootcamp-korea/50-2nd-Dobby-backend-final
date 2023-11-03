@@ -147,6 +147,7 @@ const phoneVerifyNumber = async ({ phoneNumber, number }) => {
   };
 
 };
+
 const creditField = async (userId) => {
   const userCredit = await userDao.findCredit(userId);    // findCredit(userId) => [{user.credit: ~}]
   if (userCredit) {

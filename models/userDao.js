@@ -29,7 +29,6 @@ const updateCredit = async (userId, paymentPrice) => {
     }
 }
 
-
 const findUserByEmail = async (email) => {
   const query = `SELECT * FROM users WHERE email = '${email}'`;
   return await appDataSource.query(query);

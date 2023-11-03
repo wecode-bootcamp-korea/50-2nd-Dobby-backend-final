@@ -7,6 +7,7 @@ const getProducts = async (categoryQuery, searchQuery, orderingQuery) => {
       p.image,
       p.name,
       p.price,
+      p.content,
       AVG(c.score) AS score,
       COUNT(c.id) AS commentCount 
     FROM products p 
