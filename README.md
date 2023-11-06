@@ -176,6 +176,4 @@
 
 Backend 관련 notion은 [여기](https://www.notion.so/2-DOBBY-f7a25eea39c8447d8f9366357f57b71c)에 있습니다.
 
-Frontend Repository는 [여기](https://github.com/wecode-bootcamp-korea/50-2nd-Dobby-frontend)에 있습니다.
-
 저장소에 별 달아주세요 ✨✨✨
